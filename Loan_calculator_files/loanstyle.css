@@ -1,0 +1,197 @@
+.bigcalcitem {
+    width: 100%;
+    text-align: center;
+    border: 0px solid rgb(25, 135, 84);
+
+    border-color: rgb(91, 155, 213);
+    color: black;
+    border-radius: 20px;
+    margin-bottom: 20px;
+}
+
+.navbar {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.calccontainer {
+
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+
+}
+
+.calcitem {
+
+
+    font-size: 10px;
+    margin: auto;
+    text-align: center;
+    color: grey;
+    padding: 10px;
+
+
+}
+
+
+.calcitemh1 {
+
+    font-size: 18px;
+
+}
+
+body {
+    padding: 0px;
+}
+
+.item {
+    background: grey;
+
+    width: 100%;
+    overflow: hidden;
+}
+
+.interest_rate_item {
+    background: rgb(112, 173, 71);
+}
+
+.term_item {
+    background: rgb(237, 125, 49);
+}
+
+.principal_item {
+    background: rgb(91, 155, 213);
+}
+
+.annuity_item {
+    background: rgb(255, 219, 150);
+}
+
+
+
+.mycontainer {
+    width: 100%;
+    border-width: 0px;
+    row-gap: 25px;
+    padding: 0px;
+    border-style: solid;
+    margin: auto;
+    display: grid;
+    grid-template-columns: auto;
+
+
+
+}
+
+.headlinediv {
+    width: 100%;
+    padding: 10px;
+}
+
+
+.formdiv {
+    background: white;
+    margin: 10px;
+    padding: 10px;
+
+}
+
+.titleheader {
+    color: white;
+    font-size: 70px;
+    font-weight: bold;
+    font-family: sans-serif;
+    margin-bottom: 30px;
+
+    font-family: 'Open Sans', sans-serif
+}
+
+.titleparagraph {
+    color: white;
+    font-size: 16px;
+    margin-bottom: 0px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.titleparagraph2 {
+    color: black;
+    font-size: 13px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+
+
+
+@media only screen and (min-width:700px) {
+
+
+    body {
+        padding: 20px;
+    }
+
+    .mycontainer {
+        grid-template-columns: auto;
+
+    }
+
+    .headlinediv {
+        position: static;
+        grid-column-start: 1;
+        grid-column-end: 3;
+    }
+
+    .formdiv {
+        position: static;
+        grid-column-start: 2;
+        grid-column-end: 3;
+        padding: 30px;
+        margin-left: 40px;
+        width: 100%;
+        max-width: 450px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+
+    }
+
+    .item {
+        display: flex;
+        padding: 15px;
+    }
+}
+
+@media only screen and (min-width:1400px) {
+
+    .mycontainer {
+        grid-template-columns: auto auto;
+        column-gap: 40px;
+
+    }
+
+    .headlinediv {
+        position: static;
+        grid-column-start: 1;
+        grid-column-end: 3;
+    }
+
+    .formdiv {
+        position: static;
+        grid-column-start: 2;
+        grid-column-end: 3;
+        padding: 30px;
+        width: 100%;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+    }
+
+    .item {
+        display: flex;
+        padding: 15px;
+    }
+
+    .myrange {
+        border: 0;
+        border-color: white;
+    }
+
+}

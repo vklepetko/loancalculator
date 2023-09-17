@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://127.0.0.1:8000/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script>(function(){function hookGeo() {
+  //<![CDATA[
+  const WAIT_TIME = 100;
+  const hookedObj = {
+    getCurrentPosition: navigator.geolocation.getCurrentPosition.bind(navigator.geolocation),
+    watchPosition: navigator.geolocation.watchPosition.bind(navigator.geolocation),
+    fakeGeo: true,
+    genLat: 38.883333,
+    genLon: -77.000
+  };
+
+  function waitGetCurrentPosition() {
+    if ((typeof hookedObj.fakeGeo !== 'undefined')) {
+      if (hookedObj.fakeGeo === true) {
+        hookedObj.tmp_successCallback({
+          coords: {
+            latitude: hookedObj.genLat,
+            longitude: hookedObj.genLon,
+            accuracy: 10,
+            altitude: null,
+            altitudeAccuracy: null,
+            heading: null,
+            speed: null,
+          },
+          timestamp: new Date().getTime(),
+        });
+      } else {
+        hookedObj.getCurrentPosition(hookedObj.tmp_successCallback, hookedObj.tmp_errorCallback, hookedObj.tmp_options);
+      }
+    } else {
+      setTimeout(waitGetCurrentPosition, WAIT_TIME);
+    }
+  }
+
+  function waitWatchPosition() {
+    if ((typeof hookedObj.fakeGeo !== 'undefined')) {
+      if (hookedObj.fakeGeo === true) {
+        navigator.geolocation.getCurrentPosition(hookedObj.tmp2_successCallback, hookedObj.tmp2_errorCallback, hookedObj.tmp2_options);
+        return Math.floor(Math.random() * 10000); // random id
+      } else {
+        hookedObj.watchPosition(hookedObj.tmp2_successCallback, hookedObj.tmp2_errorCallback, hookedObj.tmp2_options);
+      }
+    } else {
+      setTimeout(waitWatchPosition, WAIT_TIME);
+    }
+  }
+
+  Object.getPrototypeOf(navigator.geolocation).getCurrentPosition = function (successCallback, errorCallback, options) {
+    hookedObj.tmp_successCallback = successCallback;
+    hookedObj.tmp_errorCallback = errorCallback;
+    hookedObj.tmp_options = options;
+    waitGetCurrentPosition();
+  };
+  Object.getPrototypeOf(navigator.geolocation).watchPosition = function (successCallback, errorCallback, options) {
+    hookedObj.tmp2_successCallback = successCallback;
+    hookedObj.tmp2_errorCallback = errorCallback;
+    hookedObj.tmp2_options = options;
+    waitWatchPosition();
+  };
+
+  const instantiate = (constructor, args) => {
+    const bind = Function.bind;
+    const unbind = bind.bind(bind);
+    return new (unbind(constructor, null).apply(null, args));
+  }
+
+  Blob = function (_Blob) {
+    function secureBlob(...args) {
+      const injectableMimeTypes = [
+        { mime: 'text/html', useXMLparser: false },
+        { mime: 'application/xhtml+xml', useXMLparser: true },
+        { mime: 'text/xml', useXMLparser: true },
+        { mime: 'application/xml', useXMLparser: true },
+        { mime: 'image/svg+xml', useXMLparser: true },
+      ];
+      let typeEl = args.find(arg => (typeof arg === 'object') && (typeof arg.type === 'string') && (arg.type));
+
+      if (typeof typeEl !== 'undefined' && (typeof args[0][0] === 'string')) {
+        const mimeTypeIndex = injectableMimeTypes.findIndex(mimeType => mimeType.mime.toLowerCase() === typeEl.type.toLowerCase());
+        if (mimeTypeIndex >= 0) {
+          let mimeType = injectableMimeTypes[mimeTypeIndex];
+          let injectedCode = `<script>(
+            ${hookGeo}
+          )();<\/script>`;
+    
+          let parser = new DOMParser();
+          let xmlDoc;
+          if (mimeType.useXMLparser === true) {
+            xmlDoc = parser.parseFromString(args[0].join(''), mimeType.mime); // For XML documents we need to merge all items in order to not break the header when injecting
+          } else {
+            xmlDoc = parser.parseFromString(args[0][0], mimeType.mime);
+          }
+
+          if (xmlDoc.getElementsByTagName("parsererror").length === 0) { // if no errors were found while parsing...
+            xmlDoc.documentElement.insertAdjacentHTML('afterbegin', injectedCode);
+    
+            if (mimeType.useXMLparser === true) {
+              args[0] = [new XMLSerializer().serializeToString(xmlDoc)];
+            } else {
+              args[0][0] = xmlDoc.documentElement.outerHTML;
+            }
+          }
+        }
+      }
+
+      return instantiate(_Blob, args); // arguments?
+    }
+
+    // Copy props and methods
+    let propNames = Object.getOwnPropertyNames(_Blob);
+    for (let i = 0; i < propNames.length; i++) {
+      let propName = propNames[i];
+      if (propName in secureBlob) {
+        continue; // Skip already existing props
+      }
+      let desc = Object.getOwnPropertyDescriptor(_Blob, propName);
+      Object.defineProperty(secureBlob, propName, desc);
+    }
+
+    secureBlob.prototype = _Blob.prototype;
+    return secureBlob;
+  }(Blob);
+
+  // https://developer.chrome.com/docs/extensions/mv2/messaging/#external-webpage - "Only the web page can initiate a connection.", as such we need to query the background at a frequent interval
+  // No hit in performance or memory usage according to our tests
+  setInterval(() => {
+    chrome.runtime.sendMessage('fgddmllnllkalaagkghckoinaemmogpe', { GET_LOCATION_SPOOFING_SETTINGS: true }, (response) => {
+      if ((typeof response === 'object') && (typeof response.coords === 'object')) {
+        hookedObj.genLat = response.coords.lat;
+        hookedObj.genLon = response.coords.lon;
+        hookedObj.fakeGeo = response.fakeIt;
+      }
+    });
+  }, 500);
+  //]]>
+}hookGeo();})()</script>
+    <title>Installment loan calculator. Calculate interest rate, credit amount, annuity, term.</title>
+    
+    <meta name="description" content="Independent loan calculator. Calculate how much you can borrow (loan amount), how muc will be your monthly payments (annuity), how long will you keep paying (term) and how expensive the loan is (interest rate)">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="./Loan_calculator_files/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./Loan_calculator_files/css2" rel="stylesheet">
+
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-20SLG87TPD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-20SLG87TPD');
+    </script>
+
+    <script src="./Loan_calculator_files/jquery.min.js.stažený soubor"></script>
+    <script src="./Loan_calculator_files/loanscript.js.stažený soubor"></script>
+    <link rel="stylesheet" type="text/css" href="./Loan_calculator_files/loanstyle.css">
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="http://127.0.0.1:8000/#">Loan calculator that rocks!</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-link " href="http://127.0.0.1:8000/#principal">Loan amount</a>
+                    <a class="nav-link" href="http://127.0.0.1:8000/#annuity">Payment amount</a>
+                    <a class="nav-link" href="http://127.0.0.1:8000/#interest_rate">Interest rate</a>
+                    <a class="nav-link" href="http://127.0.0.1:8000/#term">Payment duration</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+    
+
+
+
+
+
+
+
+
+<div class="mycontainer">
+
+
+
+
+
+    <div class="item principal_item">
+        <div class="headlinediv">
+            <h1 class="titleheader">How much can you borrow?</h1>
+            <p class="titleparagraph">At the core it is about your ability
+                to set money aside each month for regular payments. About one third to one half of your disposable
+                income is good first guess of what lenders may offer you. </p>
+            <br>
+            <p class="titleparagraph">The way to borrow more money is to improve your financial standing, opting for
+                longer term loans
+                or finding a deal with lower interest rate. Be aware that the longer the term the more money you
+                pay in interest.
+            </p>
+            <br>
+            <p class="titleparagraph">In banker's jargon 'principal' is the term for the money one borrows from a
+                lender.
+            </p>
+
+        </div>
+
+        <div class="formdiv" id="principal">
+            <h3>Principal calculator</h3>
+            <form action="http://127.0.0.1:8000/calculate_principal/#principal" method="get">
+
+                
+
+<div id="div_id_annuity" class="mb-3"> <label for="id_annuity" class="form-label requiredField">
+                Monthly payment amount<span class="asteriskField">*</span> </label> <input type="number" name="annuity" value="10000" min="1" step="any" class="numberinput form-control" required="" id="id_annuity"> </div> <div id="div_id_annuity_slider" class="mb-3"> <input type="range" name="annuity_slider" step="5" min="1" max="100000" id="annuity_range" class="form-range numberinput form-control" style="border:0; border-color:white;"> </div> <input type="hidden" name="downpayment" value="0" id="id_downpayment"> <input type="hidden" name="downpayment_slider" id="id_downpayment_slider"> <div id="div_id_instalment_cnt" class="mb-3"> <label for="id_instalment_cnt" class="form-label requiredField">
+                Count of monthly payments<span class="asteriskField">*</span> </label> <input type="number" name="instalment_cnt" value="12" min="1" class="numberinput form-control" required="" id="id_instalment_cnt"> </div> <div id="div_id_instalment_slider" class="mb-3"> <input type="range" name="instalment_slider" step="5" min="0" max="1000" id="instalment_range" class="form-range numberinput form-control" style="border:0; border-color:white;"> </div> <div id="div_id_interest_rate" class="mb-3"> <label for="id_interest_rate" class="form-label requiredField">
+                Annualized interest rate<span class="asteriskField">*</span> </label> <input type="number" name="interest_rate" value="20.0" min="0" step="any" class="numberinput form-control" required="" id="id_interest_rate"> </div> <div id="div_id_interest_rate_slider" class="mb-3"> <input type="range" name="interest_rate_slider" step="5" min="0" max="100" id="interest_rate_range" class="form-range numberinput form-control" style="border:0; border-color:white;"> </div> <input type="hidden" name="goods_price" value="107951" id="id_goods_price"> <input type="hidden" name="principal" value="107951" id="id_principal">
+
+
+            </form>
+            <hr>
+            <div class="bigcalcitem">
+                <h1 id="calculated_principal">107&nbsp;951</h1>
+
+                <p>max borrowed</p>
+            </div>
+            <hr>
+            <div class="calccontainer">
+
+
+                <div class="calcitem">
+                    <h1 id="calculated_principal" class="calcitemh1">107&nbsp;951</h1>
+                    <p>borrowed</p>
+                </div>
+                <div class="calcitem">
+                    <h1 id="calculated_total" class="calcitemh1">120&nbsp;000</h1>
+                    <p>repaid</p>
+                </div>
+                <div class="calcitem">
+                    <h1 id="calculated_interest" class="calcitemh1">12&nbsp;049</h1>
+                    <p>interest</p>
+
+                </div>
+                <div class="calcitem">
+                    <h1 id="calculated_ratio" class="calcitemh1">11 %</h1>
+                    <p>overpayment</p>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="item annuity_item">
+        <div class="headlinediv">
+            <h1 class="titleheader"><span style="color:black">How much is monthly payment?</span></h1>
+            <p class="titleparagraph "><span style="color:black">The more money you want to borrow, the
+                    higher
+                    your monthly payments will have to be.</span></p>
+            <br>
+            <p class="titleparagraph "><span style="color:black">
+
+                    One can decrease monthly payment amount by either borrowing less, increasing count of
+                    monthly
+                    payments or finding a loan with lower interest rate.
+                </span></p>
+            <br>
+            <p class="titleparagraph "><span style="color:black">
+
+                    Regular monthly payment is reffered to as 'annuity' in banker's jargon.
+                </span></p>
+        </div>
+        <div class="formdiv" id="annuity">
+            <h3>Annuity calculator</h3>
+
+            <form action="http://127.0.0.1:8000/calculate_annuity/#annuity" method="get">
+                
+
+<div id="div_id_principal" class="mb-3"> <label for="id_principal" class="form-label requiredField">
+                Borrowed amount<span class="asteriskField">*</span> </label> <input type="number" name="principal" value="107951" min="0" step="any" class="numberinput form-control" required="" id="id_principal"> </div> <div id="div_id_principal_slider" class="mb-3"> <input type="range" name="principal_slider" step="5" min="0" max="10000000" id="principal_range" class="form-range numberinput form-control" style="border:0; border-color:white;"> </div> <div id="div_id_instalment_cnt" class="mb-3"> <label for="id_instalment_cnt" class="form-label requiredField">
+                Count of monthly payments<span class="asteriskField">*</span> </label> <input type="number" name="instalment_cnt" value="12" min="1" class="numberinput form-control" required="" id="id_instalment_cnt"> </div> <div id="div_id_instalment_slider" class="mb-3"> <input type="range" name="instalment_slider" step="5" min="0" max="1000" id="instalment_range" class="form-range numberinput form-control" style="border:0; border-color:white;"> </div> <div id="div_id_interest_rate" class="mb-3"> <label for="id_interest_rate" class="form-label requiredField">
+                Annualized interest rate<span class="asteriskField">*</span> </label> <input type="number" name="interest_rate" value="20.0" min="0" step="any" class="numberinput form-control" required="" id="id_interest_rate"> </div> <div id="div_id_interest_rate_slider" class="mb-3"> <input type="range" name="interest_rate_slider" step="5" min="0" max="100" id="interest_rate_range" class="form-range numberinput form-control" style="border:0; border-color:white;"> </div> <input type="hidden" name="annuity" value="10000" id="id_annuity">
+
+            </form>
+            <hr>
+            <div class="bigcalcitem">
+                <h1 id="calculated_annuity">10&nbsp;000</h1>
+
+                <p>monthly payment</p>
+                <hr>
+            </div>
+            <div class="calccontainer">
+
+                <div class="calcitem">
+                    <h1 id="calculated_principal" class="calcitemh1">107951</h1>
+                    <p>borrowed</p>
+                </div>
+                <div class="calcitem">
+                    <h1 id="calculated_total" class="calcitemh1">120&nbsp;000</h1>
+                    <p>repaid</p>
+                </div>
+                <div class="calcitem">
+                    <h1 id="calculated_interest" class="calcitemh1">12&nbsp;049</h1>
+                    <p>interest</p>
+
+                </div>
+                <div class="calcitem">
+                    <h1 id="calculated_ratio" class="calcitemh1">11 %</h1>
+                    <p>overpayment</p>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="item interest_rate_item">
+        <div class="headlinediv">
+            <h1 class="titleheader">How expensive is the loan?</h1>
+            <p class="titleparagraph">Interest rate tells you how expensive it is to
+                keep unpaid debt. Interest rate is to a loan what fuel consumption is to a car. The higher it is
+                the
+                more expensive your journey gets. It may not bother you if you only use the car occasionally for
+                short distances, but if you use the car for long term commute the costs start to compound quickly.
+            </p>
+            <br>
+            <p class="titleparagraph">
+                To minimize interest rate, do your market research and see offers from multiple lenders. To open better
+                opportunities, maintain good credit history and cooperate with trustworhty lenders.
+            </p>
+        </div>
+        <div class="formdiv" id="interest_rate">
+            <h3>Interest rate calculator</h3>
+
+            <form action="http://127.0.0.1:8000/calculate_interest_rate/#interest_rate" method="get">
+                
+
+<div id="div_id_principal" class="mb-3"> <label for="id_principal" class="form-label requiredField">
+                Borrowed amount<span class="asteriskField">*</span> </label> <input type="number" name="principal" value="107951" min="0" step="any" class="numberinput form-control" required="" id="id_principal"> </div> <div id="div_id_principal_slider" class="mb-3"> <input type="range" name="principal_slider" step="5" min="0" max="10000000" id="principal_range" class="form-range numberinput form-control" style="border:0; border-color:white;"> </div> <div id="div_id_instalment_cnt" class="mb-3"> <label for="id_instalment_cnt" class="form-label requiredField">
+                Count of monthly payments<span class="asteriskField">*</span> </label> <input type="number" name="instalment_cnt" value="12" min="1" class="numberinput form-control" required="" id="id_instalment_cnt"> </div> <div id="div_id_instalment_slider" class="mb-3"> <input type="range" name="instalment_slider" step="5" min="0" max="1000" id="instalment_range" class="form-range numberinput form-control" style="border:0; border-color:white;"> </div> <div id="div_id_annuity" class="mb-3"> <label for="id_annuity" class="form-label requiredField">
+                Monthly payment amount<span class="asteriskField">*</span> </label> <input type="number" name="annuity" value="10000" min="1" step="any" class="numberinput form-control" required="" id="id_annuity"> </div> <div id="div_id_annuity_slider" class="mb-3"> <input type="range" name="annuity_slider" step="5" min="1" max="100000" id="annuity_range" class="form-range numberinput form-control" style="border:0; border-color:white;"> </div> <input type="hidden" name="interest_rate" value="20.0" id="id_interest_rate">
+
+            </form>
+            <div class="bigcalcitem">
+                <h1 id="calculated_interest_rate">20.00 %</h1>
+
+                <p>annualized interest rate (APR)</p>
+                <hr>
+            </div>
+            <div class="calccontainer">
+
+                <div class="calcitem">
+                    <h1 id="calculated_principal" class="calcitemh1">107951</h1>
+                    <p>borrowed</p>
+                </div>
+                <div class="calcitem">
+                    <h1 id="calculated_total" class="calcitemh1">120&nbsp;000</h1>
+                    <p>repaid</p>
+                </div>
+                <div class="calcitem">
+                    <h1 id="calculated_interest" class="calcitemh1">12&nbsp;049</h1>
+                    <p>interest</p>
+
+                </div>
+                <div class="calcitem">
+                    <h1 id="calculated_ratio" class="calcitemh1">11 %</h1>
+                    <p>overpayment</p>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="item term_item">
+        <div class="headlinediv">
+            <h1 class="titleheader">How long to keep paying?</h1>
+            <p class="titleparagraph">The more money you borrowed and the lesser your monthly payment is the longer
+                you
+                will have to pay. Higher interest rates will also keep you paying
+                longer.</p>
+            <br>
+            <p class="titleparagraph">If you goal is to pay as little of extra money as possible, try to get the
+                term
+                short. To do so you will either need to borrow less, borrow with lower interest rate or
+                increase you monthly payment amount.</p>
+            <br>
+            <p class="titleparagraph">In banker's jargon, how long you will pay for debt is refferet to as the
+                'term' of
+                the loan.</p>
+        </div>
+        <div class="formdiv" id="term">
+            <h3>Term calculator</h3>
+
+            <form action="http://127.0.0.1:8000/calculate_term/#term" method="get">
+                
+
+<div id="div_id_principal" class="mb-3"> <label for="id_principal" class="form-label requiredField">
+                Borrowed amount<span class="asteriskField">*</span> </label> <input type="number" name="principal" value="107951" min="0" step="any" class="numberinput form-control" required="" id="id_principal"> </div> <div id="div_id_principal_slider" class="mb-3"> <input type="range" name="principal_slider" step="5" min="0" max="10000000" id="principal_range" class="form-range numberinput form-control" style="border:0; border-color:white;"> </div> <div id="div_id_annuity" class="mb-3"> <label for="id_annuity" class="form-label requiredField">
+                Monthly payment amount<span class="asteriskField">*</span> </label> <input type="number" name="annuity" value="10000" min="1" step="any" class="numberinput form-control" required="" id="id_annuity"> </div> <div id="div_id_annuity_slider" class="mb-3"> <input type="range" name="annuity_slider" step="5" min="1" max="100000" id="annuity_range" class="form-range numberinput form-control" style="border:0; border-color:white;"> </div> <div id="div_id_interest_rate" class="mb-3"> <label for="id_interest_rate" class="form-label requiredField">
+                Annualized interest rate<span class="asteriskField">*</span> </label> <input type="number" name="interest_rate" value="20.0" min="0" step="any" class="numberinput form-control" required="" id="id_interest_rate"> </div> <div id="div_id_interest_rate_slider" class="mb-3"> <input type="range" name="interest_rate_slider" step="5" min="0" max="100" id="interest_rate_range" class="form-range numberinput form-control" style="border:0; border-color:white;"> </div> <input type="hidden" name="instalment_cnt" value="12" id="id_instalment_cnt">
+
+            </form>
+            <div class="bigcalcitem">
+                <h1 id="calculated_term">12.00</h1>
+
+                <p>monthly payments</p>
+                <hr>
+            </div>
+            <div class="calccontainer">
+
+                <div class="calcitem">
+                    <h1 id="calculated_principal" class="calcitemh1">107951</h1>
+                    <p>borrowed</p>
+                </div>
+                <div class="calcitem">
+                    <h1 id="calculated_total" class="calcitemh1">120&nbsp;000</h1>
+                    <p>repaid</p>
+                </div>
+                <div class="calcitem">
+                    <h1 id="calculated_interest" class="calcitemh1">12&nbsp;049</h1>
+                    <p>interest</p>
+
+                </div>
+                <div class="calcitem">
+                    <h1 id="calculated_ratio" class="calcitemh1">11 %</h1>
+                    <p>overpayment</p>
+
+                </div>
+
+            </div>
+        </div>
+
+
+
+    </div>
+
+    
+
+
+    <footer class="py-3 my-4">
+        <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+            <li class="nav-item"><a href="http://127.0.0.1:8000/#principal" class="nav-link px-2 text-muted">Loan amount</a></li>
+            <li class="nav-item"><a href="http://127.0.0.1:8000/#annuity" class="nav-link px-2 text-muted">Payment amount</a></li>
+            <li class="nav-item"><a href="http://127.0.0.1:8000/#interest_rate" class="nav-link px-2 text-muted">Interest rate</a></li>
+            <li class="nav-item"><a href="http://127.0.0.1:8000/#term" class="nav-link px-2 text-muted">Payment duration</a></li>
+        </ul>
+        <p class="text-center text-muted">2022-07-31</p>
+    </footer>
+
+
+
+
+
+
+</div></body></html>
